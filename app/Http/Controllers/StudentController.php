@@ -17,12 +17,25 @@ class StudentController extends Controller
         return view('index');
     }
 
-   public function search(Request $request){
+   public function search(Request $request, Recaptcha $recaptcha){
         
-        if($request->complement != null)
+    $this->validate($request, [
+        'ci' => 'required',
+        'birth_date' => 'required',
+        'recaptcha' => ['required', $recaptcha],
+    ]);
+        if($request->complement == null){
+            $student = Student::where('ci',$request->ci)
+                                ->where('birth_date',$request->date)
+                                ->Where(function($query){
+                                    $query->whereNull('complement')
+                                          ->orwhere('complement','');
+                                })
+                                ->first();
+        }
+        else{
             $student = Student::where('ci',$request->ci)->where('complement',strtoupper($request->complement))->where('birth_date',$request->date)->first();
-        else
-            $student = Student::where('ci',$request->ci)->where('birth_date',$request->date)->first();
+        }
         return $student;
    }
 }
