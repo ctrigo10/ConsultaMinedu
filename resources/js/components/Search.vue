@@ -54,6 +54,15 @@
                             ></v-date-picker>
                         </v-menu>
                     </v-row>
+                                                        <div class="form-group">
+                                        <vue-recaptcha 
+                                        ref="recaptcha"
+                                        @verify="onVerify"
+                                        sitekey="6Le0dbYZAAAAAA-9DYVUvoMWdHqbB_qqWCEmiDwe">
+                                    
+                                        </vue-recaptcha>
+                                    </div>
+                                     
                     <v-row col="12" align="center">
                             <v-btn class="ma-2" 
                                 color="purple"
@@ -99,12 +108,16 @@
     </v-container>
 </template>
 <script>
+import VueRecaptcha from 'vue-recaptcha';
   export default {
+    components: { VueRecaptcha },
+
     data: () => ({
       menu: false,
-      student:{ci : "", complement : "", date: null},
+      student:{ci : null, complement : null, date: null},
       mensaje_inicial: "Ingrese el número de CI, el complemento si se requiere y su fecha de nacimiento",
-      state: "Ingrese el número de CI, el complemento si se requiere y su fecha de nacimiento"
+      state: "Ingrese el número de CI, el complemento si se requiere y su fecha de nacimiento",
+      recaptcha: '',
     }),
     watch: {
       menu (val) {
@@ -112,25 +125,32 @@
       },
     },
     methods: {
+        onVerify(response) {
+               this.recaptcha = response;
+               console.log(this.recaptcha)
+            },
       save (date) {
         this.$refs.menu.save(date)
       },
       cancel(){
-        this.student.ci="",
-        this.student.complement="",
-        this.student.date=""
+        this.student.ci=null;
+        this.student.complement=null,
+        this.student.date=null
         this.state = this.mensaje_inicial
       },
       async search(){
-          if(this.student.ci == "" && this.student.date == "")
-            this.state = "El número de identidad y la fecha de nacimiento son datos requeridos"
+          if(this.student.ci == null){
+              this.state = "El número de identidad es dato requerido"
+          } else if(this.student.date == null){
+              this.state = "La fecha de nacimiento es dato requerido"
+          }
           else{
               try {
                   let res = await axios.post(`http://localhost:8000/api/student/search`,this.student)
                   if(res.data.state == 'approved') this.state = "El propietario de la Cédula de identidad proporcionada esta APROBADO"
                   else if(res.data.state == 'denied') this.state = "El propietario de la Cédula de identidad proporcionada esta DENEGADO"
-                  else this.state = "El propietario de la Cédula de identidad proporcionada No EXISTE en la lista"
-                  
+                  else this.state = "El propietario de la Cédula de identidad proporcionada NO EXISTE en la lista"
+                  this.$refs.recaptcha.reset();
                   console.log(res);
               }catch(e){
                   console.log(e);
