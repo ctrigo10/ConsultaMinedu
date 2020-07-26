@@ -17,13 +17,8 @@ class StudentController extends Controller
         return view('index');
     }
 
-   public function search(Request $request, Recaptcha $recaptcha){
+   public function search(Request $request){
         
-    $this->validate($request, [
-        'ci' => 'required',
-        'birth_date' => 'required',
-        'recaptcha' => ['required', $recaptcha],
-    ]);
         if($request->complement == null){
             $student = Student::where('ci',$request->ci)
                                 ->where('birth_date',$request->date)

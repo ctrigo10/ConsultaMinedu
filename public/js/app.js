@@ -1984,6 +1984,7 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var vue_recaptcha__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vue-recaptcha */ "./node_modules/vue-recaptcha/dist/vue-recaptcha.es.js");
 
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
@@ -2090,17 +2091,34 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 /* harmony default export */ __webpack_exports__["default"] = ({
+  components: {
+    VueRecaptcha: vue_recaptcha__WEBPACK_IMPORTED_MODULE_1__["default"]
+  },
   data: function data() {
     return {
       menu: false,
       student: {
-        ci: "",
-        complement: "",
+        ci: null,
+        complement: null,
         date: null
       },
       mensaje_inicial: "Ingrese el número de CI, el complemento si se requiere y su fecha de nacimiento",
-      state: "Ingrese el número de CI, el complemento si se requiere y su fecha de nacimiento"
+      state: "Ingrese el número de CI, el complemento si se requiere y su fecha de nacimiento",
+      recaptcha: ''
     };
   },
   watch: {
@@ -2113,12 +2131,19 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     }
   },
   methods: {
+    onVerify: function onVerify(response) {
+      this.recaptcha = response;
+      console.log(this.recaptcha);
+    },
     save: function save(date) {
       this.$refs.menu.save(date);
     },
     cancel: function cancel() {
-      this.student.ci = "", this.student.complement = "", this.student.date = "";
+      this.student.ci = null;
+      this.student.complement = null, this.student.date = null;
       this.state = this.mensaje_inicial;
+      this.recaptcha = "";
+      this.$refs.recaptcha.reset();
     },
     search: function search() {
       var _this2 = this;
@@ -2129,38 +2154,69 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                if (!(_this2.student.ci == "" && _this2.student.date == "")) {
-                  _context.next = 4;
+                if (!(_this2.student.ci == null || _this2.student.ci == "")) {
+                  _context.next = 5;
                   break;
                 }
 
-                _this2.state = "El número de identidad y la fecha de nacimiento son datos requeridos";
-                _context.next = 15;
+                _this2.state = "El número de identidad es dato requerido";
+                _this2.recaptcha = "";
+                _context.next = 28;
                 break;
 
-              case 4:
-                _context.prev = 4;
-                _context.next = 7;
-                return axios.post("http://localhost:8000/api/student/search", _this2.student);
+              case 5:
+                if (!(_this2.student.date == null || _this2.student.date == "")) {
+                  _context.next = 10;
+                  break;
+                }
 
-              case 7:
-                res = _context.sent;
-                if (res.data.state == 'approved') _this2.state = "El propietario de la Cédula de identidad proporcionada esta APROBADO";else if (res.data.state == 'denied') _this2.state = "El propietario de la Cédula de identidad proporcionada esta DENEGADO";else _this2.state = "El propietario de la Cédula de identidad proporcionada No EXISTE en la lista";
-                console.log(res);
-                _context.next = 15;
+                _this2.state = "La fecha de nacimiento es dato requerido";
+                _this2.recaptcha = "";
+                _context.next = 28;
                 break;
 
-              case 12:
-                _context.prev = 12;
-                _context.t0 = _context["catch"](4);
-                console.log(_context.t0);
+              case 10:
+                if (!_this2.$refs.recaptcha) {
+                  _context.next = 28;
+                  break;
+                }
+
+                if (!(_this2.recaptcha == "")) {
+                  _context.next = 15;
+                  break;
+                }
+
+                _this2.state = "Haga click en NO SOY UN ROBOT";
+                _context.next = 28;
+                break;
 
               case 15:
+                _context.prev = 15;
+                _context.next = 18;
+                return axios.post("http://localhost:8000/api/student/search", _this2.student);
+
+              case 18:
+                res = _context.sent;
+                if (res.data.state == 'approved') _this2.state = "El propietario de la Cédula de identidad proporcionada esta APROBADO";else if (res.data.state == 'denied') _this2.state = "El propietario de la Cédula de identidad proporcionada esta DENEGADO";else _this2.state = "El propietario de la Cédula de identidad proporcionada NO EXISTE en la lista";
+
+                _this2.$refs.recaptcha.reset();
+
+                _this2.recaptcha = "";
+                console.log(res);
+                _context.next = 28;
+                break;
+
+              case 25:
+                _context.prev = 25;
+                _context.t0 = _context["catch"](15);
+                console.log(_context.t0);
+
+              case 28:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee, null, [[4, 12]]);
+        }, _callee, null, [[15, 25]]);
       }))();
     }
   }
@@ -39478,6 +39534,20 @@ var render = function() {
                   _vm._v(" "),
                   _c(
                     "v-row",
+                    [
+                      _c("vue-recaptcha", {
+                        ref: "recaptcha",
+                        attrs: {
+                          sitekey: "6Le0dbYZAAAAAA-9DYVUvoMWdHqbB_qqWCEmiDwe"
+                        },
+                        on: { verify: _vm.onVerify }
+                      })
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-row",
                     { attrs: { col: "12", align: "center" } },
                     [
                       _c(
@@ -39685,6 +39755,221 @@ function normalizeComponent (
     options: options
   }
 }
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-recaptcha/dist/vue-recaptcha.es.js":
+/*!*************************************************************!*\
+  !*** ./node_modules/vue-recaptcha/dist/vue-recaptcha.es.js ***!
+  \*************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+function _extends() {
+  _extends = Object.assign || function (target) {
+    for (var i = 1; i < arguments.length; i++) {
+      var source = arguments[i];
+
+      for (var key in source) {
+        if (Object.prototype.hasOwnProperty.call(source, key)) {
+          target[key] = source[key];
+        }
+      }
+    }
+
+    return target;
+  };
+
+  return _extends.apply(this, arguments);
+}
+
+var defer = function defer() {
+  var state = false; // Resolved or not
+
+  var callbacks = [];
+
+  var resolve = function resolve(val) {
+    if (state) {
+      return;
+    }
+
+    state = true;
+
+    for (var i = 0, len = callbacks.length; i < len; i++) {
+      callbacks[i](val);
+    }
+  };
+
+  var then = function then(cb) {
+    if (!state) {
+      callbacks.push(cb);
+      return;
+    }
+
+    cb();
+  };
+
+  var deferred = {
+    resolved: function resolved() {
+      return state;
+    },
+    resolve: resolve,
+    promise: {
+      then: then
+    }
+  };
+  return deferred;
+};
+
+var ownProp = Object.prototype.hasOwnProperty;
+function createRecaptcha() {
+  var deferred = defer();
+  return {
+    notify: function notify() {
+      deferred.resolve();
+    },
+    wait: function wait() {
+      return deferred.promise;
+    },
+    render: function render(ele, options, cb) {
+      this.wait().then(function () {
+        cb(window.grecaptcha.render(ele, options));
+      });
+    },
+    reset: function reset(widgetId) {
+      if (typeof widgetId === 'undefined') {
+        return;
+      }
+
+      this.assertLoaded();
+      this.wait().then(function () {
+        return window.grecaptcha.reset(widgetId);
+      });
+    },
+    execute: function execute(widgetId) {
+      if (typeof widgetId === 'undefined') {
+        return;
+      }
+
+      this.assertLoaded();
+      this.wait().then(function () {
+        return window.grecaptcha.execute(widgetId);
+      });
+    },
+    checkRecaptchaLoad: function checkRecaptchaLoad() {
+      if (ownProp.call(window, 'grecaptcha') && ownProp.call(window.grecaptcha, 'render')) {
+        this.notify();
+      }
+    },
+    assertLoaded: function assertLoaded() {
+      if (!deferred.resolved()) {
+        throw new Error('ReCAPTCHA has not been loaded');
+      }
+    }
+  };
+}
+var recaptcha = createRecaptcha();
+
+if (typeof window !== 'undefined') {
+  window.vueRecaptchaApiLoaded = recaptcha.notify;
+}
+
+var VueRecaptcha = {
+  name: 'VueRecaptcha',
+  props: {
+    sitekey: {
+      type: String,
+      required: true
+    },
+    theme: {
+      type: String
+    },
+    badge: {
+      type: String
+    },
+    type: {
+      type: String
+    },
+    size: {
+      type: String
+    },
+    tabindex: {
+      type: String
+    },
+    loadRecaptchaScript: {
+      type: Boolean,
+      "default": false
+    },
+    recaptchaScriptId: {
+      type: String,
+      "default": '__RECAPTCHA_SCRIPT'
+    },
+    recaptchaHost: {
+      type: String,
+      "default": 'www.google.com'
+    },
+    language: {
+      type: String,
+      "default": ''
+    }
+  },
+  beforeMount: function beforeMount() {
+    if (this.loadRecaptchaScript) {
+      if (!document.getElementById(this.recaptchaScriptId)) {
+        // Note: vueRecaptchaApiLoaded load callback name is per the latest documentation
+        var script = document.createElement('script');
+        script.id = this.recaptchaScriptId;
+        script.src = "https://" + this.recaptchaHost + "/recaptcha/api.js?onload=vueRecaptchaApiLoaded&render=explicit&hl=" + this.language;
+        script.async = true;
+        script.defer = true;
+        document.head.appendChild(script);
+      }
+    }
+  },
+  mounted: function mounted() {
+    var _this = this;
+
+    recaptcha.checkRecaptchaLoad();
+
+    var opts = _extends({}, this.$props, {
+      callback: this.emitVerify,
+      'expired-callback': this.emitExpired,
+      'error-callback': this.emitError
+    });
+
+    var container = this.$slots["default"] ? this.$el.children[0] : this.$el;
+    recaptcha.render(container, opts, function (id) {
+      _this.$widgetId = id;
+
+      _this.$emit('render', id);
+    });
+  },
+  methods: {
+    reset: function reset() {
+      recaptcha.reset(this.$widgetId);
+    },
+    execute: function execute() {
+      recaptcha.execute(this.$widgetId);
+    },
+    emitVerify: function emitVerify(response) {
+      this.$emit('verify', response);
+    },
+    emitExpired: function emitExpired() {
+      this.$emit('expired');
+    },
+    emitError: function emitError() {
+      this.$emit('error');
+    }
+  },
+  render: function render(h) {
+    return h('div', {}, this.$slots["default"]);
+  }
+};
+
+/* harmony default export */ __webpack_exports__["default"] = (VueRecaptcha);
 
 
 /***/ }),

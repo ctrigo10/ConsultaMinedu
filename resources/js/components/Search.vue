@@ -54,14 +54,17 @@
                             ></v-date-picker>
                         </v-menu>
                     </v-row>
-                                                        <div class="form-group">
-                                        <vue-recaptcha 
-                                        ref="recaptcha"
-                                        @verify="onVerify"
-                                        sitekey="6Le0dbYZAAAAAA-9DYVUvoMWdHqbB_qqWCEmiDwe">
+
+                    <v-row>
+                      
+                    <vue-recaptcha 
+                    ref="recaptcha"
+                    @verify="onVerify"
+                    sitekey="6Le0dbYZAAAAAA-9DYVUvoMWdHqbB_qqWCEmiDwe"
+                    >
+                    </vue-recaptcha>
                                     
-                                        </vue-recaptcha>
-                                    </div>
+                    </v-row>
                                      
                     <v-row col="12" align="center">
                             <v-btn class="ma-2" 
@@ -137,13 +140,21 @@ import VueRecaptcha from 'vue-recaptcha';
         this.student.complement=null,
         this.student.date=null
         this.state = this.mensaje_inicial
+        this.recaptcha = ""
+        this.$refs.recaptcha.reset();
       },
       async search(){
-          if(this.student.ci == null){
+          
+
+          if(this.student.ci == null || this.student.ci == ""){
               this.state = "El número de identidad es dato requerido"
-          } else if(this.student.date == null){
+              this.recaptcha = ""
+          } else if(this.student.date == null || this.student.date == ""){
               this.state = "La fecha de nacimiento es dato requerido"
-          }
+              this.recaptcha = ""
+          }else if(this.$refs.recaptcha)
+                    if(this.recaptcha == "")
+                        this.state = "Haga click en NO SOY UN ROBOT"
           else{
               try {
                   let res = await axios.post(`http://localhost:8000/api/student/search`,this.student)
@@ -151,6 +162,7 @@ import VueRecaptcha from 'vue-recaptcha';
                   else if(res.data.state == 'denied') this.state = "El propietario de la Cédula de identidad proporcionada esta DENEGADO"
                   else this.state = "El propietario de la Cédula de identidad proporcionada NO EXISTE en la lista"
                   this.$refs.recaptcha.reset();
+                  this.recaptcha = ""
                   console.log(res);
               }catch(e){
                   console.log(e);
