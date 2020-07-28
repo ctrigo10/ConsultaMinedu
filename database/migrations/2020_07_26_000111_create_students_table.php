@@ -17,12 +17,13 @@ class CreateStudentsTable extends Migration
             $table->id();
             $table->integer('ci');
             $table->string('complement')->nullable();
-            $table->string('first_name');
-            $table->string('second_name')->nullable();;
-            $table->string('lastname');
-            $table->string('second_lastname')->nullable();;
-            $table->date('birth_date');
-            $table->string('state');
+            $table->string('full_name');
+            //$table->string('first_name')->nullable();
+            //$table->string('second_name')->nullable();
+            //$table->string('lastname')->nullable();
+            //$table->string('second_lastname')->nullable();
+            $table->date('birth_date')->nullable();
+            $table->string('scholarship');
             $table->timestamps();
         });
     }

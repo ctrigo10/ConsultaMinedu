@@ -1,13 +1,13 @@
 <template>
     <v-container>
         <v-row>
-            <v-col lg="7" sm="12"> 
+            <v-col lg="5" sm="12"> 
                 <v-form
                 ref="form"
                 @submit.prevent="search()"
                 >
                     <v-row>
-                        <v-col lg="8">
+                        <v-col lg="7">
                             <v-text-field
                             v-model="student.ci"
                             label="NÚMERO DE IDENTIDAD"
@@ -16,7 +16,7 @@
                              onKeypress="if (event.keyCode < 45 || event.keyCode > 57) event.returnValue = false;"
                             ></v-text-field>
                         </v-col>
-                        <v-col lg="4">
+                        <v-col lg="5">
                             <v-text-field
                                 v-model="student.complement"
                                 label="Complemento"
@@ -86,11 +86,11 @@
                 </v-form>
             </v-col>
             <v-col>
-                 <v-card
+             <v-card
                     class="mx-auto"
                     color="#644491"
                     dark
-                    max-width="400"
+                    max-width="100%"
                 >
                     <v-card-title>
                     <v-icon
@@ -99,11 +99,17 @@
                     >
                         mdi-message-text-outline
                     </v-icon>
-                    <span class="title font-weight-light">Mensaje</span>
+                    <span class="title font-weight-black">BECAS SOCIALES 2020</span>
                     </v-card-title>
 
-                    <v-card-text class="headline font-weight-bold">
+                    <v-card-text class="h5 text-justify font-weight-medium">
                          {{ state }}
+                         <br><br> 
+                         <template v-if="mensaje2">
+                            {{ mensaje2 }}
+                            <br><br>
+                        </template>  
+                         "Por un Pacto Nacional para la Transformación Educativa"
                     </v-card-text>
                 </v-card>
             </v-col>
@@ -118,9 +124,10 @@ import VueRecaptcha from 'vue-recaptcha';
     data: () => ({
       menu: false,
       student:{ci : null, complement : null, date: null},
-      mensaje_inicial: "Ingrese el número de CI, el complemento si se requiere y su fecha de nacimiento",
-      state: "Ingrese el número de CI, el complemento si se requiere y su fecha de nacimiento",
+      mensaje_inicial: "Ingrese su número de C.I. (el Complemento si corresponde) y fecha de nacimiento.",
+      state: "Ingrese su número de C.I. (el Complemento si corresponde) y fecha de nacimiento.",
       recaptcha: '',
+      mensaje2: '',
     }),
     watch: {
       menu (val) {
@@ -129,8 +136,7 @@ import VueRecaptcha from 'vue-recaptcha';
     },
     methods: {
         onVerify(response) {
-               this.recaptcha = response;
-               console.log(this.recaptcha)
+               this.recaptcha = response
             },
       save (date) {
         this.$refs.menu.save(date)
@@ -141,26 +147,34 @@ import VueRecaptcha from 'vue-recaptcha';
         this.student.date=null
         this.state = this.mensaje_inicial
         this.recaptcha = ""
+        this.mensaje2 = ""
         this.$refs.recaptcha.reset();
       },
       async search(){
-          
-
           if(this.student.ci == null || this.student.ci == ""){
-              this.state = "El número de identidad es dato requerido"
+              this.state = "El número de Cédula de Identidad es un dato requerido."
               this.recaptcha = ""
           } else if(this.student.date == null || this.student.date == ""){
-              this.state = "La fecha de nacimiento es dato requerido"
+              this.state = "La fecha de nacimiento es un dato requerido."
               this.recaptcha = ""
           }else if(this.$refs.recaptcha)
                     if(this.recaptcha == "")
-                        this.state = "Haga click en NO SOY UN ROBOT"
+                        this.state = "Haga click en NO SOY UN ROBOT."
           else{
               try {
                   let res = await axios.post(`http://localhost:8000/api/student/search`,this.student)
-                  if(res.data.state == 'approved') this.state = "El propietario de la Cédula de identidad proporcionada esta APROBADO"
-                  else if(res.data.state == 'denied') this.state = "El propietario de la Cédula de identidad proporcionada esta DENEGADO"
-                  else this.state = "El propietario de la Cédula de identidad proporcionada NO EXISTE en la lista"
+                  if(res.data.scholarship){
+                      this.state = `${res.data.full_name}: El Ministerio de Educación a través del Viceministerio de 
+                      Educación Superior de Formación Profesional comunica que usted ha sido beneficiado a una Beca Social 2020.`
+                      this.mensaje2 = `Para mayor información respecto a la entrega de la misma, por favor comunicarse con la Dirección General 
+                      de Educación Superior Universitaria o la Dirección General de Educación Superior Técnica Tecnológica Lingüística y Artística.`
+                  }
+                  else {
+                      this.state = `El Ministerio de Educación a través del Viceministerio de Educación Superior de Formación 
+                      Profesional comunica que usted no ha sido beneficiado a una Beca Social 2020.`
+                      this.mensaje2 = `Para mayor información por favor comunicarse con la Dirección General de Educación Superior Universitaria o 
+                      la Dirección General de Educación Superior Técnica Tecnológica Lingüística y Artística.`
+                  }
                   this.$refs.recaptcha.reset();
                   this.recaptcha = ""
                   console.log(res);

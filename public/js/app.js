@@ -2103,6 +2103,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   components: {
@@ -2116,9 +2122,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         complement: null,
         date: null
       },
-      mensaje_inicial: "Ingrese el número de CI, el complemento si se requiere y su fecha de nacimiento",
-      state: "Ingrese el número de CI, el complemento si se requiere y su fecha de nacimiento",
-      recaptcha: ''
+      mensaje_inicial: "Ingrese su número de C.I. (el Complemento si corresponde) y fecha de nacimiento.",
+      state: "Ingrese su número de C.I. (el Complemento si corresponde) y fecha de nacimiento.",
+      recaptcha: '',
+      mensaje2: ''
     };
   },
   watch: {
@@ -2133,7 +2140,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   methods: {
     onVerify: function onVerify(response) {
       this.recaptcha = response;
-      console.log(this.recaptcha);
     },
     save: function save(date) {
       this.$refs.menu.save(date);
@@ -2143,6 +2149,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       this.student.complement = null, this.student.date = null;
       this.state = this.mensaje_inicial;
       this.recaptcha = "";
+      this.mensaje2 = "";
       this.$refs.recaptcha.reset();
     },
     search: function search() {
@@ -2159,7 +2166,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   break;
                 }
 
-                _this2.state = "El número de identidad es dato requerido";
+                _this2.state = "El número de Cédula de Identidad es un dato requerido.";
                 _this2.recaptcha = "";
                 _context.next = 28;
                 break;
@@ -2170,7 +2177,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   break;
                 }
 
-                _this2.state = "La fecha de nacimiento es dato requerido";
+                _this2.state = "La fecha de nacimiento es un dato requerido.";
                 _this2.recaptcha = "";
                 _context.next = 28;
                 break;
@@ -2186,7 +2193,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   break;
                 }
 
-                _this2.state = "Haga click en NO SOY UN ROBOT";
+                _this2.state = "Haga click en NO SOY UN ROBOT.";
                 _context.next = 28;
                 break;
 
@@ -2197,7 +2204,14 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
               case 18:
                 res = _context.sent;
-                if (res.data.state == 'approved') _this2.state = "El propietario de la Cédula de identidad proporcionada esta APROBADO";else if (res.data.state == 'denied') _this2.state = "El propietario de la Cédula de identidad proporcionada esta DENEGADO";else _this2.state = "El propietario de la Cédula de identidad proporcionada NO EXISTE en la lista";
+
+                if (res.data.scholarship) {
+                  _this2.state = "".concat(res.data.full_name, ": El Ministerio de Educaci\xF3n a trav\xE9s del Viceministerio de \n                      Educaci\xF3n Superior de Formaci\xF3n Profesional comunica que usted ha sido beneficiado a una Beca Social 2020.");
+                  _this2.mensaje2 = "Para mayor informaci\xF3n respecto a la entrega de la misma, por favor comunicarse con la Direcci\xF3n General \n                      de Educaci\xF3n Superior Universitaria o la Direcci\xF3n General de Educaci\xF3n Superior T\xE9cnica Tecnol\xF3gica Ling\xFC\xEDstica y Art\xEDstica.";
+                } else {
+                  _this2.state = "El Ministerio de Educaci\xF3n a trav\xE9s del Viceministerio de Educaci\xF3n Superior de Formaci\xF3n \n                      Profesional comunica que usted no ha sido beneficiado a una Beca Social 2020.";
+                  _this2.mensaje2 = "Para mayor informaci\xF3n por favor comunicarse con la Direcci\xF3n General de Educaci\xF3n Superior Universitaria o \n                      la Direcci\xF3n General de Educaci\xF3n Superior T\xE9cnica Tecnol\xF3gica Ling\xFC\xEDstica y Art\xEDstica.";
+                }
 
                 _this2.$refs.recaptcha.reset();
 
@@ -39383,7 +39397,7 @@ var render = function() {
         [
           _c(
             "v-col",
-            { attrs: { lg: "7", sm: "12" } },
+            { attrs: { lg: "5", sm: "12" } },
             [
               _c(
                 "v-form",
@@ -39402,7 +39416,7 @@ var render = function() {
                     [
                       _c(
                         "v-col",
-                        { attrs: { lg: "8" } },
+                        { attrs: { lg: "7" } },
                         [
                           _c("v-text-field", {
                             attrs: {
@@ -39426,7 +39440,7 @@ var render = function() {
                       _vm._v(" "),
                       _c(
                         "v-col",
-                        { attrs: { lg: "4" } },
+                        { attrs: { lg: "5" } },
                         [
                           _c("v-text-field", {
                             staticStyle: { "text-transform": "uppercase" },
@@ -39597,7 +39611,7 @@ var render = function() {
                 "v-card",
                 {
                   staticClass: "mx-auto",
-                  attrs: { color: "#644491", dark: "", "max-width": "400" }
+                  attrs: { color: "#644491", dark: "", "max-width": "100%" }
                 },
                 [
                   _c(
@@ -39609,8 +39623,8 @@ var render = function() {
                         )
                       ]),
                       _vm._v(" "),
-                      _c("span", { staticClass: "title font-weight-light" }, [
-                        _vm._v("Mensaje")
+                      _c("span", { staticClass: "title font-weight-black" }, [
+                        _vm._v("BECAS SOCIALES 2020")
                       ])
                     ],
                     1
@@ -39618,14 +39632,32 @@ var render = function() {
                   _vm._v(" "),
                   _c(
                     "v-card-text",
-                    { staticClass: "headline font-weight-bold" },
+                    { staticClass: "h5 text-justify font-weight-medium" },
                     [
                       _vm._v(
                         "\n                     " +
                           _vm._s(_vm.state) +
-                          "\n                "
+                          "\n                     "
+                      ),
+                      _c("br"),
+                      _c("br"),
+                      _vm._v(" "),
+                      _vm.mensaje2
+                        ? [
+                            _vm._v(
+                              "\n                        " +
+                                _vm._s(_vm.mensaje2) +
+                                "\n                        "
+                            ),
+                            _c("br"),
+                            _c("br")
+                          ]
+                        : _vm._e(),
+                      _vm._v(
+                        '  \n                     "Por un Pacto Nacional para la Transformación Educativa"\n                '
                       )
-                    ]
+                    ],
+                    2
                   )
                 ],
                 1

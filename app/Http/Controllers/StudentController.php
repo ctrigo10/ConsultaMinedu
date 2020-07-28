@@ -19,18 +19,20 @@ class StudentController extends Controller
 
    public function search(Request $request){
         
-        if($request->complement == null){
-            $student = Student::where('ci',$request->ci)
-                                ->where('birth_date',$request->date)
-                                ->Where(function($query){
-                                    $query->whereNull('complement')
-                                          ->orwhere('complement','');
-                                })
-                                ->first();
-        }
-        else{
-            $student = Student::where('ci',$request->ci)->where('complement',strtoupper($request->complement))->where('birth_date',$request->date)->first();
-        }
+        // if($request->complement == null){
+        //     $student = Student::where('ci',$request->ci)
+        //                         ->where('birth_date',$request->date)
+        //                         ->Where(function($query){
+        //                             $query->whereNull('complement')
+        //                                   ->orwhere('complement','');
+        //                         })
+        //                         ->first();
+        // }
+        // else{
+        //     //$student = Student::where('ci',$request->ci)->where('complement',strtoupper($request->complement))->where('birth_date',$request->date)->first();
+        // }
+
+        $student = Student::where('ci',$request->ci)->first();
         return $student;
    }
 }
